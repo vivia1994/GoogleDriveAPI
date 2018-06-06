@@ -12,9 +12,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Test
+namespace GoogleDriveHelper.Helper
 {
-    class Program
+    class Helper
     {
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/drive-dotnet-quickstart.json
@@ -74,8 +74,9 @@ namespace Test
         /// <param name="service"></param>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        public static IList<Google.Apis.Drive.v3.Data.File> getFileList(DriveService service, string parentId)
+        public static IList<Google.Apis.Drive.v3.Data.File> getFileList(string parentId)
         {
+            DriveService service = getDriveService(scopes);
             FilesResource.ListRequest listRequest = service.Files.List();
             listRequest.Q = "'" + parentId + "' in parents";
             listRequest.PageSize = 1000;
@@ -92,8 +93,9 @@ namespace Test
         /// <param name="folderName"> folder's name</param>
         /// <param name="parentId">the parent folder's Id on the Google Drive</param>
         /// <returns></returns>
-        public static string addFolder(DriveService service, string folderName, string parentId)
+        public static string addFolder(string folderName, string parentId)
         {
+            DriveService service = getDriveService(scopes);
             string fieldId = "";
 
             var fileMetadata = String.IsNullOrWhiteSpace(parentId) ?
@@ -121,16 +123,17 @@ namespace Test
         /// <param name="service"></param>
         /// <param name="googleDriveParentFolderId"></param>
         /// <param name="localFolderPath"></param>
-        public static void uploadFolder(DriveService service, string googleDriveParentFolderId, string localFolderPath)
+        public static void uploadFolder( string googleDriveParentFolderId, string localFolderPath)
         {
+            DriveService service = getDriveService(scopes);
             string folderName = localFolderPath.Split(@"\".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-            string parentId = addFolder(service, folderName, googleDriveParentFolderId);
+            string parentId = addFolder(folderName, googleDriveParentFolderId);
             if (Directory.GetFiles(localFolderPath).Count() > 0)
                 foreach (var file in Directory.GetFiles(localFolderPath))
-                    uploadFile(service,file,parentId);
+                    uploadFile(file,parentId);
             if (Directory.GetDirectories(localFolderPath).Count() > 0)
                 foreach (var subDir in Directory.GetDirectories(localFolderPath))
-                    uploadFolder(service, parentId, subDir);
+                    uploadFolder(parentId, subDir);
         }
 
         /// <summary>
@@ -139,8 +142,9 @@ namespace Test
         /// <param name="service"></param>
         /// <param name="filePath"></param>
         /// <param name="parentId"></param>
-        public static void uploadFile(DriveService service, string filePath, string parentId)
+        public static void uploadFile( string filePath, string parentId)
         {
+            DriveService service = getDriveService(scopes);
             string fileName = filePath.Split(@"\".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
             var fileMetadata = new Google.Apis.Drive.v3.Data.File()
             {
@@ -161,8 +165,9 @@ namespace Test
         /// print each folder/file name on the Google Drive
         /// </summary>
         /// <param name="fileLists"></param>
-        public static void printFileName(DriveService service, IList<Google.Apis.Drive.v3.Data.File> fileLists)
+        public static void printFileName(IList<Google.Apis.Drive.v3.Data.File> fileLists)
         {
+            DriveService service = getDriveService(scopes);
             if (fileLists != null && fileLists.Count > 0)
                 foreach (var file in fileLists)
                 {
@@ -179,8 +184,9 @@ namespace Test
         /// </summary>
         /// <param name="service"></param>
         /// <param name="fileId"></param>
-        public static void deleteFile(DriveService service, string fileId)
+        public static void deleteFile(string fileId)
         {
+            DriveService service = getDriveService(scopes);
             service.Files.Delete(fileId).Execute();
         }
 
@@ -191,8 +197,9 @@ namespace Test
         /// <param name="fileId"></param>
         /// <param name="downloadPath"></param>
         /// <returns></returns>
-        public static string downloadFile(DriveService service, string fileId, string downloadPath)
+        public static string downloadFile( string fileId, string downloadPath)
         {
+            DriveService service = getDriveService(scopes);
             var downloadStatus = "";
             var request = service.Files.Get(fileId);
             string fileName = request.Execute().Name;
@@ -237,13 +244,14 @@ namespace Test
         /// <param name="parentId"></param>
         /// <param name="folderName"></param>
         /// <param name="downloadPath"></param>
-        public static void downloadFolder(DriveService service, string parentId, string downloadPath)
+        public static void downloadFolder( string parentId, string downloadPath)
         {
+            DriveService service = getDriveService(scopes);
             var folder = service.Files.Get(parentId).Execute();
             string folderName = folder.Name;
 
             string parentFolderPath = downloadPath + @"\" + folderName + @"\";
-            IList<Google.Apis.Drive.v3.Data.File> listFiles = getFileList(service, parentId);
+            IList<Google.Apis.Drive.v3.Data.File> listFiles = getFileList(parentId);
 
             foreach(var file in listFiles)
             {
@@ -261,7 +269,7 @@ namespace Test
                     Console.WriteLine(Path.Combine(parentFolderPath, file.Name));
                     if(!Directory.Exists(Path.Combine(parentFolderPath, file.Name)))
                         Directory.CreateDirectory(Path.Combine(parentFolderPath, file.Name));
-                    downloadFolder(service, file.Id, parentFolderPath);
+                    downloadFolder(file.Id, parentFolderPath);
                 }
                 else {
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -300,8 +308,9 @@ namespace Test
         /// <param name="service"></param>
         /// <param name="fileId"></param>
         /// <param name="destinationFolderId"></param>
-        public static void moveFile(DriveService service, string fileId, string destinationFolderId)
+        public static void moveFile( string fileId, string destinationFolderId)
         {
+            DriveService service = getDriveService(scopes);
             var getRequest = service.Files.Get(fileId);
             getRequest.Fields = "parents";
             var file = getRequest.Execute();
@@ -321,33 +330,31 @@ namespace Test
             string credPath = Environment.GetFolderPath(
                     Environment.SpecialFolder.Personal);
             credPath = Path.Combine(credPath, ".credentials/drive-dotnet-quickstart.json");
-            DriveService service = getDriveService(scopes);
-
+     
             if (Authorize(credPath))
             {
-                //IList<Google.Apis.Drive.v3.Data.File> fileLists = getFileList(service, parentId);
-                //printFileName(service,fileLists);
+                //IList<Google.Apis.Drive.v3.Data.File> fileLists = getFileList(parentId);
+                //printFileName(fileLists);
 
                 //string localFolderPath = @"C:\Users\vlei002\Desktop\vivi\Study\CODE\GoogleDriveTest\Test\Properties";
-                //folderUpload(service, parentId, localFolderPath);
+                //uploadFolder(parentId, localFolderPath);
 
                 //string localFilePath = @"C:\Users\vlei002\Desktop\vivi\Project\UIPath\FATCA Robot\0531\FATCA Robot\Custom Package\GoogleDriveAPIActivities.1.0.1.1.nupkg";
-                //fileUpload(service, localFilePath, parentId);
+                //uploadFile(localFilePath, parentId);
 
-                //deleteFile(service, "1ktOM8bjqJrpKVoCk_9OjUfEKsXaC_TW5");
+                //deleteFile("1ktOM8bjqJrpKVoCk_9OjUfEKsXaC_TW5");
 
                 //string fileId = "1QAwNnc2Kj6YWGiRDFoHkgAsQAsAlFNCh";
-                //string localFolderPath = @"C:\Users\vlei002\Desktop\vivi\Study\CODE";
-                //downloadFile(service, fileId, localFolderPath);
+                //downloadFile(fileId, localFolderPath);
 
-                parentId = "1MHifp0srO0bFnFT_ZECHcnR_HQkvEoHR";
-                string folderName = "abc";
-                string downloadPath = @"C:\Users\vlei002\Desktop\vivi\Study\CODE";
-                downloadFolder(service, parentId, downloadPath);
+                //parentId = "1MHifp0srO0bFnFT_ZECHcnR_HQkvEoHR";
+                //string folderName = "abc";
+                //string downloadPath = @"C:\Users\vlei002\Desktop\vivi\Study\CODE";
+                //downloadFolder(parentId, downloadPath);
 
                 //parentId = "1KHeEkXVXaKhq_SAGcqdTbt1ZdbVw_4FI";
                 //string destinationFolderId = "1TYmz-Q5grxMxQMoUsN_FBtShj9hPlXAA";
-                //moveFile(service, parentId, destinationFolderId);
+                //moveFile(parentId, destinationFolderId);
 
                 Console.ReadKey();
             }
