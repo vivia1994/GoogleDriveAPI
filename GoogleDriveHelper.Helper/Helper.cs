@@ -184,10 +184,23 @@ namespace GoogleDriveHelper.Helper
         /// </summary>
         /// <param name="service"></param>
         /// <param name="fileId"></param>
-        public static void deleteFile(string fileId)
+        public static string deleteFile(string fileId)
         {
-            DriveService service = getDriveService(scopes);
-            service.Files.Delete(fileId).Execute();
+            string result = "";
+            string fileName = "";
+            try
+            {
+                DriveService service = getDriveService(scopes);
+                var request = service.Files.Get(fileId);
+                fileName = request.Execute().Name;
+                service.Files.Delete(fileId).Execute();
+                result = $"Delete file {fileName} successfully.";
+            }
+            catch (Exception e)
+            {
+                result = string.IsNullOrWhiteSpace(fileName) ? $"Delete file failed.{e.ToString()}" : $"Delete file {fileName} failed.{e.ToString()}";
+            }
+            return result;
         }
 
         /// <summary>
@@ -342,7 +355,7 @@ namespace GoogleDriveHelper.Helper
                 //string localFilePath = @"C:\Users\vlei002\Desktop\vivi\Project\UIPath\FATCA Robot\0531\FATCA Robot\Custom Package\GoogleDriveAPIActivities.1.0.1.1.nupkg";
                 //uploadFile(localFilePath, parentId);
 
-                //deleteFile("1ktOM8bjqJrpKVoCk_9OjUfEKsXaC_TW5");
+                Console.WriteLine(deleteFile("1rSljBkgF7qt-oT08NitcrzbjcAei1aLn"));
 
                 //string fileId = "1QAwNnc2Kj6YWGiRDFoHkgAsQAsAlFNCh";
                 //downloadFile(fileId, localFolderPath);
@@ -356,7 +369,7 @@ namespace GoogleDriveHelper.Helper
                 //string destinationFolderId = "1TYmz-Q5grxMxQMoUsN_FBtShj9hPlXAA";
                 //moveFile(parentId, destinationFolderId);
 
-                Console.ReadKey();
+                //Console.ReadKey();
             }
         }
     }

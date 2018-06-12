@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{337005D6-4EDC-4C73-ADCA-0F6753D94C8D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Test</RootNamespace>
-    <AssemblyName>Test</AssemblyName>
+    <RootNamespace>GoogleDriveHelper.Helper</RootNamespace>
+    <AssemblyName>GoogleDriveHelper.Helper</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
