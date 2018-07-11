@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleDriveHelper.Helper", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetOutputFromCMD", "GetOutputFromCMD\GetOutputFromCMD.csproj", "{634EF789-56C0-4C6F-9665-FC9C6C294D80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleDriveHelper.CopyTool", "GoogleDriveHelper.CopyTool\GoogleDriveHelper.CopyTool.csproj", "{77C43108-C528-4403-8390-911A41652C84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{634EF789-56C0-4C6F-9665-FC9C6C294D80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{634EF789-56C0-4C6F-9665-FC9C6C294D80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{634EF789-56C0-4C6F-9665-FC9C6C294D80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77C43108-C528-4403-8390-911A41652C84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77C43108-C528-4403-8390-911A41652C84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77C43108-C528-4403-8390-911A41652C84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77C43108-C528-4403-8390-911A41652C84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
